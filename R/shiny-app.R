@@ -3,7 +3,7 @@
 #'
 #' Run the shiny app from this package.
 #'
-#' @param ... params for shiny::runApp
+#' @param ... params for shiny::shinyAppDir
 #'
 #' @return none
 #' @export
@@ -15,7 +15,8 @@ launch_shiny_app <- function(...)
   # load this package, which is not loaded in global.R (this would be not compatible with packrat)
   require(app_pkg, character.only = TRUE)    # TODO: substitute with 'library'
   # run the app
-  shiny::runApp(appDir = system.file("app", package = app_pkg), ...)
+  ##shiny::runApp(appDir = system.file("app", package = app_pkg), ...)
+  shiny::shinyAppDir(appDir = system.file("app", package = app_pkg), ...)
 }
 
 #' launch_shiny_app
