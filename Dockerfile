@@ -1,6 +1,6 @@
 # build command: docker build -t probe-shiny-app .
 
-FROM openanalytics/r-base
+FROM akiro/r-base:R-3.4.4
 
 MAINTAINER Andrea Melloncelli "andrea.melloncelli@gmail.com"
 
@@ -24,7 +24,7 @@ RUN apt-get update && apt-get install -y \
 libmpfr-dev
 
 # basic shiny functionality
-RUN R -e "install.packages(c('shiny', 'rmarkdown'), repos='https://cloud.r-project.org/')"
+# RUN R -e "install.packages(c('shiny', 'rmarkdown'), repos='https://cloud.r-project.org/')"
 
 # install dependencies of this app
 RUN R -e "install.packages('devtools', repos='https://cloud.r-project.org/')"
@@ -38,18 +38,16 @@ RUN R -e "install.packages('packrat', repos='https://cloud.r-project.org/')"
 ENV file packrat/init.R
 COPY $file /root/appPackage/$file
 ENV file packrat/packrat.lock
-COPY $file /root/appPackage/$file
+COPY packrat/packrat.lock /root/appPackage/packrat/packrat.lock
 ENV file packrat/packrat.opts
 
 COPY $file /root/appPackage/$file
 RUN R -e 'setwd("/root/appPackage"); packrat::on(); packrat::restore();' 
-RUN cp -r /root/appPackage/packrat/lib/x86_64-pc-linux-gnu/3.3.3/ /usr/local/lib/R/site-library/
+RUN cp -r /root/appPackage/packrat/lib/x86_64-pc-linux-gnu/$R_BASE_VERSION/ /usr/local/lib/R/site-library/
 
 # copy and install the package
 COPY DESCRIPTION NAMESPACE probeShinyApp.Rproj /root/appPackage/
 ENV dir inst
-COPY $dir /root/appPackage/$dir
-ENV dir man
 COPY $dir /root/appPackage/$dir
 ENV dir R
 COPY $dir /root/appPackage/$dir
@@ -64,7 +62,5 @@ COPY inst/app-container/Rprofile.site /usr/lib/R/etc/
 RUN R --version
 
 EXPOSE 3838
-
-#CMD ["R", "-e shiny::runApp('/root/milano/app')"]
 
 CMD ["R", "-e probeShinyApp::launch_shiny_app()"]
