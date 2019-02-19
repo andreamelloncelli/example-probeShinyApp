@@ -43,7 +43,8 @@ ENV file packrat/packrat.opts
 
 COPY $file /root/appPackage/$file
 RUN R -e 'setwd("/root/appPackage"); packrat::on(); packrat::restore();' 
-RUN cp -r /root/appPackage/packrat/lib/x86_64-pc-linux-gnu/$R_BASE_VERSION/ /usr/local/lib/R/site-library/
+RUN R --version
+RUN cp -r /root/appPackage/packrat/lib/x86_64-pc-linux-gnu/3.4.4/ /usr/local/lib/R/site-library/
 
 # copy and install the package
 COPY DESCRIPTION NAMESPACE probeShinyApp.Rproj /root/appPackage/
